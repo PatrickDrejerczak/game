@@ -5,8 +5,10 @@
 canvas {
   background-image: url("https://wallpaperaccess.com/full/510849.jpg");
   display: block;
-  margin-left: 700px;
-  margin-top: 300px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
   background-size: cover;
 }
 

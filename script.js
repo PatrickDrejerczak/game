@@ -19,6 +19,7 @@ let brickOffsetTop = 30;
 let brickOffsetLeft = 30;
 let score = 0;
 let lives = 3;
+let color = "blue";
 
 var bricks = [];
 for (var c = 0; c < brickColumnCount; c++) {
@@ -48,6 +49,12 @@ function keyUpHandler(e) {
   }
 }
 
+function chColor() {
+  hex = Math.floor(Math.random() * 1000000) + 1;
+  color = "" + "#" + hex + "";
+  return color;
+}
+
 function mouseMoveHandler(e) {
   var relativeX = e.clientX - canvas.offsetLeft;
   if (relativeX > 0 && relativeX < canvas.width) {
@@ -68,6 +75,7 @@ function collisionDetection() {
           dy = -dy;
           b.status = 0;
           score++;
+          chColor();
           if (score == brickRowCount * brickColumnCount) {
             alert("YOU WIN, CONGRATS!");
             document.location.reload();
@@ -81,7 +89,7 @@ function collisionDetection() {
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = "red";
+  ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
 }
