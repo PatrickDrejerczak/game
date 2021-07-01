@@ -1,77 +1,166 @@
-/**
- * Assets logo
- * <i class="fas fa-trash" onclick="alert('s')"></i>
-  <i class="fas fa-edit"  onclick="alert('s')"></i>
-  <i class="fas fa-sync-alt" onclick="alert('s')"></i>
-*/
-//get tthe content of the input task value
-// if not empty we add task, else alert
-// after that reset the input value
-function dragStart() {
-  console.log("start draging");
-}
-function dragEnd() {
-  console.log("drag finish");
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+let ballRadius = 10;
+let x = canvas.width / 2;
+let y = canvas.height - 30;
+let dx = 2;
+let dy = -2;
+let paddleHeight = 10;
+let paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth) / 2;
+let rightPressed = false;
+let leftPressed = false;
+let brickRowCount = 5;
+let brickColumnCount = 3;
+let brickWidth = 75;
+let brickHeight = 20;
+let brickPadding = 10;
+let brickOffsetTop = 30;
+let brickOffsetLeft = 30;
+let score = 0;
+let lives = 3;
+
+var bricks = [];
+for (var c = 0; c < brickColumnCount; c++) {
+  bricks[c] = [];
+  for (var r = 0; r < brickRowCount; r++) {
+    bricks[c][r] = { x: 0, y: 0, status: 1 };
+  }
 }
 
-function removeTask() {
-  console.log("remove");
-}
-function editTask() {
-  console.log("editTask");
-}
-//function addTask
-function addTask(x) {
-  //create new list , and stored in a variable
-  let task = document.createElement("li");
-  //Adding content
-  //create a div element to hold content
-  let taskContent = document.createElement("div");
-  //add class to this div
-  taskContent.classList.add("task-content");
-  //add content to this div
-  taskContent.innerText = x;
-  // add the div into the li element that created on lin 26
-  task.appendChild(taskContent);
-  //style to the li lement
-  task.classList.add("task");
-  task.classList.add("fill");
-  //behavior
-  //drag and drop to the li element
-  task.setAttribute("draggable", "true");
-  task.addEventListener("dragstart", dragStart);
-  task.addEventListener("dragend", dragEnd);
-  //logo button
-  let logoCollections = document.createElement("div");
-  logoCollections.classList.add("trash");
-  //create a div to contain our trash logo
-  let trash = document.createElement("div");
-  let trashLogo = "<i class='fas fa-trash' ></i>";
-  trash.innerHTML = trashLogo;
-  trash.addEventListener("click", removeTask);
-  //create a div to contain our edit logo
-  let edit = document.createElement("div");
-  let editLogo = "<i class='fas fa-edit'></i>";
-  edit.innerHTML = editLogo;
-  edit.addEventListener("click", editTask);
-  logoCollections.appendChild(trash);
-  logoCollections.appendChild(edit);
-  task.appendChild(logoCollections);
-  //select the tasks list collection area
-  let tasks = document.getElementById("tasks-added");
-  // insert the task li element created on line 26 , and insert before the first child - element -li - task of the tasks list id #tasks-added
-  tasks.insertBefore(task, tasks.childNodes[0]);
-}
-//get the input value from user
-document.getElementById("add-task").addEventListener("click", function () {
-  //step 1 : geting user input
-  let taskInput = document.getElementById("task-value"); //our input box
-  let inputValue = taskInput.value;
-  if (!inputValue) {
-    alert("yo!!! please input task");
-    return;
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
+
+function keyDownHandler(e) {
+  if (e.key == "Right" || e.key == "ArrowRight") {
+    rightPressed = true;
+  } else if (e.key == "Left" || e.key == "ArrowLeft") {
+    leftPressed = true;
   }
-  //step 2:
-  addTask(inputValue); /// calling , executing a function  -> the value of this "inputValue is " =
-  document.getElementById("task-value").value = "";
-});
+}
+
+function keyUpHandler(e) {
+  if (e.key == "Right" || e.key == "ArrowRight") {
+    rightPressed = false;
+  } else if (e.key == "Left" || e.key == "ArrowLeft") {
+    leftPressed = false;
+  }
+}
+
+function mouseMoveHandler(e) {
+  var relativeX = e.clientX - canvas.offsetLeft;
+  if (relativeX > 0 && relativeX < canvas.width) {
+    paddleX = relativeX - paddleWidth / 2;
+  }
+}
+function collisionDetection() {
+  for (var c = 0; c < brickColumnCount; c++) {
+    for (var r = 0; r < brickRowCount; r++) {
+      var b = bricks[c][r];
+      if (b.status == 1) {
+        if (
+          x > b.x &&
+          x < b.x + brickWidth &&
+          y > b.y &&
+          y < b.y + brickHeight
+        ) {
+          dy = -dy;
+          b.status = 0;
+          score++;
+          if (score == brickRowCount * brickColumnCount) {
+            alert("YOU WIN, CONGRATS!");
+            document.location.reload();
+          }
+        }
+      }
+    }
+  }
+}
+
+function drawBall() {
+  ctx.beginPath();
+  ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+  ctx.fillStyle = "red";
+  ctx.fill();
+  ctx.closePath();
+}
+function drawPaddle() {
+  ctx.beginPath();
+  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+  ctx.fillStyle = "green";
+  ctx.fill();
+  ctx.closePath();
+}
+function drawBricks() {
+  for (var c = 0; c < brickColumnCount; c++) {
+    for (var r = 0; r < brickRowCount; r++) {
+      if (bricks[c][r].status == 1) {
+        var brickX = r * (brickWidth + brickPadding) + brickOffsetLeft;
+        var brickY = c * (brickHeight + brickPadding) + brickOffsetTop;
+        bricks[c][r].x = brickX;
+        bricks[c][r].y = brickY;
+        ctx.beginPath();
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+  }
+}
+function drawScore() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "black";
+  ctx.fillText("Score: " + score, 8, 20);
+}
+function drawLives() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "black";
+  ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBricks();
+  drawBall();
+  drawPaddle();
+  drawScore();
+  drawLives();
+  collisionDetection();
+
+  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+    dx = -dx;
+  }
+  if (y + dy < ballRadius) {
+    dy = -dy;
+  } else if (y + dy > canvas.height - ballRadius) {
+    if (x > paddleX && x < paddleX + paddleWidth) {
+      dy = -dy;
+    } else {
+      lives--;
+      if (!lives) {
+        alert("GAME OVER");
+        document.location.reload();
+      } else {
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = 3;
+        dy = -3;
+        paddleX = (canvas.width - paddleWidth) / 2;
+      }
+    }
+  }
+
+  if (rightPressed && paddleX < canvas.width - paddleWidth) {
+    paddleX += 7;
+  } else if (leftPressed && paddleX > 0) {
+    paddleX -= 7;
+  }
+
+  x += dx;
+  y += dy;
+  requestAnimationFrame(draw);
+}
+
+draw();
