@@ -2,17 +2,20 @@
   padding: 0;
   margin: 0;
 }
-canvas {
-  background-image: url("https://wallpaperaccess.com/full/510849.jpg");
-  display: block;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: auto;
-  background-size: cover;
-}
 
 body {
   background-image: url("https://www.oregoncoast.org//imager/files_idss_com/C346/e76b236c-a805-4149-86fc-05e06144b9ef_8ee9fc24e6acde7e6be4bbd8dbd7ee0b.jpg");
   background-size: cover;
+  background-repeat: no-repeat;
+}
+
+canvas {
+  background-image: url("https://wallpaperaccess.com/full/510849.jpg");
+  display: block;
+  background-size: cover;
+}
+
+#myCanvas {
+  margin-top: 30vh;
+  margin-left: 35vw;
 }
